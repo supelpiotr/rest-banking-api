@@ -1,6 +1,8 @@
 package com.supelpiotr.users.data;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -8,7 +10,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class UserEntity implements Serializable {
 
     private static final long serialVersionUID = 5313493413859894403L;
 
