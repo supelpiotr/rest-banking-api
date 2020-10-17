@@ -7,12 +7,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-class ConfirmationTokenService {
+public class ConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
-    void saveConfirmationToken(ConfirmationToken confirmationToken) {
+    public void saveConfirmationToken(ConfirmationToken confirmationToken) {
 
         confirmationTokenRepository.save(confirmationToken);
     }
+
 }
