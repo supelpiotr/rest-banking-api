@@ -1,4 +1,4 @@
-package com.supelpiotr.restbankingapi;
+package com.supelpiotr;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
