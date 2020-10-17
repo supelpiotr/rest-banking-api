@@ -1,4 +1,4 @@
-package com.supelpiotr.users.utils;
+package com.supelpiotr.confirmationToken.data;
 
 import com.supelpiotr.users.data.UserEntity;
 import lombok.AllArgsConstructor;
@@ -15,15 +15,15 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-class ConfirmationToken {
+public class ConfirmationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String confirmationToken;
-
     private LocalDate createdDate;
+
+    private String token;
 
     @OneToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
@@ -32,6 +32,6 @@ class ConfirmationToken {
     ConfirmationToken(UserEntity user) {
         this.user = user;
         this.createdDate = LocalDate.now();
-        this.confirmationToken = UUID.randomUUID().toString();
+        this.token = UUID.randomUUID().toString();
     }
 }
