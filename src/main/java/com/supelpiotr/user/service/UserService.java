@@ -1,24 +1,29 @@
-package com.supelpiotr.users.service;
+package com.supelpiotr.user.service;
 
 import com.supelpiotr.confirmationToken.data.ConfirmationToken;
 import com.supelpiotr.confirmationToken.service.ConfirmationTokenService;
-import com.supelpiotr.users.data.UserEntity;
-import com.supelpiotr.users.repository.UserRepository;
+import com.supelpiotr.user.data.UserEntity;
+import com.supelpiotr.user.dto.UserDTO;
+import com.supelpiotr.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.Optional;
 
+@Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private UserRepository userRepository;
-    private ConfirmationTokenService confirmationTokenService;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ConfirmationTokenService confirmationTokenService;
 
     @Override
     public UserDetails loadUserByUsername(String pesel) throws UsernameNotFoundException {
@@ -33,7 +38,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    void registerUser(UserEntity user) {
+    public void registerUser(UserEntity user) {
 
         final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 
@@ -44,6 +49,12 @@ public class UserService implements UserDetailsService {
         final ConfirmationToken confirmationToken = new ConfirmationToken(user);
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+    }
+
+    public UserEntity mapToEntity(UserDTO userDTO) {
+
+        return new ModelMapper().map(userDTO, UserEntity.class);
 
     }
 

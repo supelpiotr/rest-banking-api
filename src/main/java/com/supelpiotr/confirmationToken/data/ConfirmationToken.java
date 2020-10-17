@@ -1,6 +1,6 @@
 package com.supelpiotr.confirmationToken.data;
 
-import com.supelpiotr.users.data.UserEntity;
+import com.supelpiotr.user.data.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

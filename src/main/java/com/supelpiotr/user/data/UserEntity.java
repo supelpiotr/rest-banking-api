@@ -1,4 +1,4 @@
-package com.supelpiotr.users.data;
+package com.supelpiotr.user.data;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -6,7 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -16,7 +15,8 @@ import java.util.Collections;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "Users")
+@Entity
+@Table(name = "users")
 public class UserEntity implements UserDetails {
 
     @Id
