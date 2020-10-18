@@ -1,4 +1,4 @@
-package com.supelpiotr.utils;
+package com.supelpiotr.config;
 
 import org.h2.server.web.WebServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;

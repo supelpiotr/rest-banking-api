@@ -1,11 +1,13 @@
 package com.supelpiotr.user.data;
 
 import lombok.*;
+import org.hibernate.validator.constraints.pl.PESEL;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -27,15 +29,20 @@ public class UserEntity implements UserDetails {
     private String firstName;
     @Column(nullable = false, length = 50)
     private String lastName;
-    @Column(nullable = false, length = 120, unique = true)
+    @Column(nullable = false, length = 11, unique = true)
+    @PESEL
     private String pesel;
     @Column(nullable = false)
     private String password;
-    @Builder.Default
+    @Column(nullable = false)
+    private BigDecimal initialPlnBalance = BigDecimal.valueOf(0.0);
+    @Column(nullable = false)
+    private BigDecimal plnBalance = BigDecimal.valueOf(0.0);
+    @Column(nullable = false)
+    private BigDecimal eurBalance = BigDecimal.valueOf(0.0);
+
     private UserRole userRole = UserRole.ROLE_USER;
-    @Builder.Default
     private Boolean locked = false;
-    @Builder.Default
     private Boolean enabled = false;
 
     @Override
@@ -73,8 +80,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
-
 
 }

@@ -9,11 +9,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import javax.validation.Valid;
+
+@RestController
 @AllArgsConstructor
 public class UserController {
 
@@ -22,7 +26,7 @@ public class UserController {
     private final ConfirmationTokenService confirmationTokenService;
 
     @RequestMapping(value="/register", method= RequestMethod.POST, consumes="application/json")
-    ResponseEntity<String> signUp(@RequestBody UserDTO userDTO) {
+    ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
 
         UserEntity user = userService.mapToEntity(userDTO);
         userService.registerUser(user);

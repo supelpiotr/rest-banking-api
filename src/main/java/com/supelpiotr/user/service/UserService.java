@@ -54,6 +54,7 @@ public class UserService implements UserDetailsService {
 
     public UserEntity mapToEntity(UserDTO userDTO) {
 
+        userDTO.setEnabled(true);
         return new ModelMapper().map(userDTO, UserEntity.class);
 
     }
