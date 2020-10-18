@@ -43,8 +43,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/basic/**").hasRole("BASIC")
                 .antMatchers("/api/session").permitAll()
+                .antMatchers("/api/register").permitAll()
                 .antMatchers(HttpMethod.GET).permitAll()
-                .antMatchers("/api/**").hasRole("BASIC");
+                .antMatchers("/api/create/subaccount").hasRole("BASIC");
 
         http.formLogin();
 

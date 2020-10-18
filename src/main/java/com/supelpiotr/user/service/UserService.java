@@ -1,5 +1,6 @@
 package com.supelpiotr.user.service;
 
+import com.supelpiotr.account.repository.AccountRepository;
 import com.supelpiotr.confirmationToken.data.ConfirmationToken;
 import com.supelpiotr.confirmationToken.service.ConfirmationTokenService;
 import com.supelpiotr.user.data.UserEntity;
@@ -7,6 +8,7 @@ import com.supelpiotr.user.dto.UserDTO;
 import com.supelpiotr.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,6 +26,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
+    private final AccountRepository accountRepository;
 
     @Override
     public UserDetails loadUserByUsername(String pesel) throws UsernameNotFoundException {
@@ -55,8 +58,13 @@ public class UserService implements UserDetailsService {
     public UserEntity mapToEntity(UserDTO userDTO) {
 
         userDTO.setEnabled(true);
-        return new ModelMapper().map(userDTO, UserEntity.class);
+        UserEntity user = new ModelMapper().map(userDTO, UserEntity.class);
+        return user;
 
+    }
+
+    public void save(UserEntity user) {
+        userRepository.save(user);
     }
 
 }

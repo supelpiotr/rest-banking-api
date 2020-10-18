@@ -1,5 +1,6 @@
 package com.supelpiotr.user.data;
 
+import com.supelpiotr.account.data.BaseAccount;
 import lombok.*;
 import org.hibernate.validator.constraints.pl.PESEL;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,15 +11,14 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
 public class UserEntity implements UserDetails {
 
     @Id
@@ -30,16 +30,14 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false, length = 50)
     private String lastName;
     @Column(nullable = false, length = 11, unique = true)
-    @PESEL
+    //@PESEL
     private String pesel;
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private BigDecimal initialPlnBalance = BigDecimal.valueOf(0.0);
-    @Column(nullable = false)
-    private BigDecimal plnBalance = BigDecimal.valueOf(0.0);
-    @Column(nullable = false)
-    private BigDecimal eurBalance = BigDecimal.valueOf(0.0);
+    private BigDecimal initialPlnBalance = BigDecimal.valueOf(0);
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BaseAccount> userAccount;
 
     private UserRole userRole = UserRole.ROLE_USER;
     private Boolean locked = false;
