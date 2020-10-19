@@ -1,5 +1,5 @@
 package com.supelpiotr.account.data;
 
 public enum AccountType {
-    PLN, EUR
+    PLN, USD
 }

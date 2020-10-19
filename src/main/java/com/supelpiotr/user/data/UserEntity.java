@@ -1,8 +1,8 @@
 package com.supelpiotr.user.data;
 
+import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.account.data.BaseAccount;
 import lombok.*;
-import org.hibernate.validator.constraints.pl.PESEL;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -79,6 +81,25 @@ public class UserEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public boolean subAccountActive(AccountType accountType) {
+        return this.getUserAccount()
+                .stream()
+                .filter(i -> i.getType().equals(accountType))
+                .collect(toSingleton()) != null;
+    }
+
+    public static <T> Collector<T, ?, T> toSingleton() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
     }
 
 }

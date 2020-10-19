@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 
 @Configuration
 @AllArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
@@ -40,10 +42,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeRequests()
-                .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/basic/**").hasRole("BASIC")
                 .antMatchers("/api/session").permitAll()
                 .antMatchers("/api/register").permitAll()
+                .antMatchers("/api/user/**").permitAll()
                 .antMatchers(HttpMethod.GET).permitAll()
                 .antMatchers("/api/create/subaccount").hasRole("BASIC");
 
@@ -103,13 +104,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Component
     public static class CustomLogoutHandler extends BaseController implements LogoutHandler, LogoutSuccessHandler {
-        // Before Logout
+
         @Override
         public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
         }
 
-        // After Logout
         @Override
         public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
             responseText(response, objectResult(SessionController.getJSON(null)));

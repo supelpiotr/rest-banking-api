@@ -1,5 +1,7 @@
 package com.supelpiotr.user.service;
 
+import com.supelpiotr.account.data.AccountType;
+import com.supelpiotr.account.data.BaseAccount;
 import com.supelpiotr.account.repository.AccountRepository;
 import com.supelpiotr.confirmationToken.data.ConfirmationToken;
 import com.supelpiotr.confirmationToken.service.ConfirmationTokenService;
@@ -16,8 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +71,44 @@ public class UserService implements UserDetailsService {
 
     public void save(UserEntity user) {
         userRepository.save(user);
+    }
+
+    public BigDecimal getCurrencyBalance(UserEntity user, AccountType accountType){
+        BaseAccount usdUserAccount = user.getUserAccount().stream()
+                .filter(i -> i.getType().equals(accountType))
+                .collect(toSingleton());
+        return usdUserAccount.getBalance();
+    }
+
+    public BigDecimal getUserPln(UserEntity user){
+        BaseAccount plnAccount = user.getUserAccount().stream()
+                .filter(i -> i.getType().equals(AccountType.PLN))
+                .collect(toSingleton());
+        return plnAccount.getBalance();
+    }
+
+    public BaseAccount getUserSubAccount(UserEntity user, AccountType accountType){
+        return user.getUserAccount().stream()
+                .filter(i -> i.getType().equals(accountType))
+                .collect(toSingleton());
+    }
+
+    public BaseAccount getUserPlnAccount(UserEntity user){
+        return user.getUserAccount().stream()
+                .filter(i -> i.getType().equals(AccountType.PLN))
+                .collect(toSingleton());
+    }
+
+    public static <T> Collector<T, ?, T> toSingleton() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
     }
 
 }

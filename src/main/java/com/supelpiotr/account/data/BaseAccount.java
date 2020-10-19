@@ -30,7 +30,7 @@ public class BaseAccount {
     private AccountType type = AccountType.PLN;
 
     @Column
-    private BigDecimal balancePLN = BigDecimal.valueOf(0);
+    private BigDecimal balance = BigDecimal.valueOf(0);
 
     @PrePersist
     private void ensureId(){

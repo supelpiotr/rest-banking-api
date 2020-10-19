@@ -4,7 +4,6 @@ import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.account.data.BaseAccount;
 import com.supelpiotr.account.dto.AccountPlnDTO;
 import com.supelpiotr.user.data.UserEntity;
-import com.supelpiotr.user.dto.UserDTO;
 import com.supelpiotr.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -13,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -35,36 +32,37 @@ public class AccountService {
         List<BaseAccount> accounts = new ArrayList<>();
         BaseAccount account = new BaseAccount();
         account.setType(AccountType.PLN);
-        account.setBalancePLN(userEntity.getInitialPlnBalance());
+        account.setBalance(userEntity.getInitialPlnBalance());
         accounts.add(account);
         userEntity.setUserAccount(accounts);
         return userEntity;
 
     }
 
-    public ResponseEntity<String> createSubaccount(UserEntity user) {
+    public ResponseEntity<String> createSubAccount(UserEntity user, AccountType accountType) {
 
 
         if (user != null){
             List<BaseAccount> accounts = user.getUserAccount();
-            List<BaseAccount> eurAccounts = user.getUserAccount()
+            List<BaseAccount> usdAccounts = user.getUserAccount()
                     .stream()
-                    .filter(i -> i.getType().equals(AccountType.EUR))
+                    .filter(i -> i.getType().equals(AccountType.USD))
                     .collect(Collectors.toList());
-            if (eurAccounts.isEmpty()) {
+            if (usdAccounts.isEmpty()) {
                 BaseAccount account = new BaseAccount();
-                account.setType(AccountType.EUR);
+                account.setType(accountType);
                 accounts.add(account);
                 user.setUserAccount(accounts);
+                user.setSubAccountActive(true);
                 userService.save(user);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("EUR subaccount already created!");
+                        .body("USD sub account already created!");
             }
         }
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body("Subaccount created!");
+                .body("Sub account created!");
 
     }
 
