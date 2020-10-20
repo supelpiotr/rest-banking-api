@@ -1,6 +1,5 @@
 package com.supelpiotr.user.data;
 
-import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.account.data.BaseAccount;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

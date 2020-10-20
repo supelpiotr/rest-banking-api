@@ -1,11 +1,9 @@
 package com.supelpiotr.account.data;
 
-import com.supelpiotr.user.data.UserEntity;
 import lombok.*;
-import org.hibernate.mapping.ToOne;
-import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.UUID;
@@ -17,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class BaseAccount {
+public class BaseAccount implements Serializable {
 
     @Id
     @GeneratedValue

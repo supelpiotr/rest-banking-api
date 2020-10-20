@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -88,14 +87,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Component
     public static class CustomLoginHandler extends BaseController implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
-        // Login Success
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
             LOGGER.info("User login successfully, name={}", authentication.getName());
             responseText(response, objectResult(SessionController.getJSON(authentication)));
         }
 
-        // Login Failure
         @Override
         public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
             responseText(response, errorMessage(exception.getMessage()));
@@ -107,7 +104,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-
+            LOGGER.info("User logout successfully, name={}", authentication.getName());
         }
 
         @Override

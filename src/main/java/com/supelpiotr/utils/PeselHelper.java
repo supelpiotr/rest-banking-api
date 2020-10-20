@@ -2,6 +2,9 @@ package com.supelpiotr.utils;
 
 public class PeselHelper {
 
+    private PeselHelper() {
+    }
+
     public static Long getBirthYear(String pesel) {
 
         long year;

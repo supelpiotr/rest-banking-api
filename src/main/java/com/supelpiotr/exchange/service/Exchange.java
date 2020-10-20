@@ -1,11 +1,11 @@
 package com.supelpiotr.exchange.service;
 
-import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.exchange.data.ExchangeDTO;
 import com.supelpiotr.user.data.UserEntity;
+import com.supelpiotr.utils.ExchangeException;
 
 public interface Exchange {
 
     void exchange(ExchangeDTO exchangeDTO,
-                  UserEntity userEntity) throws Exception;
+                  UserEntity userEntity) throws ExchangeException;
 }

@@ -9,20 +9,18 @@ import com.supelpiotr.user.data.UserEntity;
 import com.supelpiotr.user.dto.UserDTO;
 import com.supelpiotr.user.repository.UserRepository;
 import com.supelpiotr.utils.PeselHelper;
+import com.supelpiotr.utils.ExchangeException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -49,14 +47,14 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void registerUser(UserEntity user) throws Exception {
+    public void registerUser(UserEntity user) throws ExchangeException {
 
         Long birthYear = PeselHelper.getBirthYear(user.getPesel());
         int year = Calendar.getInstance().get(Calendar.YEAR);
         if (!PeselHelper.isPeselValid(user.getPesel())){
-            throw new Exception("PESEL number invalid");
+            throw new ExchangeException("PESEL number invalid");
         } else if (year - birthYear < 18){
-            throw new Exception("User is underaged");
+            throw new ExchangeException("User is underaged");
         }
         final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 

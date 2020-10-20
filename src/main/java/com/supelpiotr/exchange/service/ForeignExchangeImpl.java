@@ -6,6 +6,7 @@ import com.supelpiotr.exchange.data.ExchangeDTO;
 import com.supelpiotr.rate.service.RateService;
 import com.supelpiotr.user.data.UserEntity;
 import com.supelpiotr.user.service.UserService;
+import com.supelpiotr.utils.ExchangeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,47 +21,36 @@ public class ForeignExchangeImpl implements Exchange {
     private final RateService rateService;
 
     @Override
-    public void exchange(ExchangeDTO exchangeDTO, UserEntity userEntity) throws Exception {
+    public void exchange(ExchangeDTO exchangeDTO, UserEntity userEntity) throws ExchangeException {
 
         AccountType initialCurrency = exchangeDTO.getInitialCurrency();
         AccountType finalCurrency = exchangeDTO.getFinalCurrency();
-
-        BigDecimal currencyRate = BigDecimal.ONE;
         BigDecimal requestedValue = exchangeDTO.getRequestedValue();
-        BigDecimal userPlnBalance = userService.getUserPln(userEntity);
 
         if (!initialCurrency.equals(AccountType.PLN)
                 && userService.subAccountActive(userEntity, initialCurrency)) {
 
-            BaseAccount foreignCurrencyAccount = userService.getUserSubAccount(userEntity, initialCurrency);
-            BigDecimal foreignCurrencyBalance = userService.getCurrencyBalance(userEntity, initialCurrency);
-
-            try {
-                currencyRate = rateService.getRate(initialCurrency);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (foreignCurrencyBalance.compareTo(requestedValue) >= 0) {
-                BaseAccount userPlnAccount = userService.getUserPlnAccount(userEntity);
-
-                userPlnAccount.setBalance(requestedValue.multiply(currencyRate).add(userPlnBalance));
-                foreignCurrencyAccount.setBalance(foreignCurrencyBalance.subtract(requestedValue));
-
-            } else {
-                throw new Exception(String
-                        .format("Requested value is greater than %s balance", initialCurrency));
-            }
+            foreignToPlnExchange(userEntity, initialCurrency, requestedValue);
 
         } else if (initialCurrency.equals(AccountType.PLN)
                 && userService.subAccountActive(userEntity, finalCurrency)){
+            
+            plnToForeignExchange(userEntity, finalCurrency, requestedValue);
+
+        } else {
+            throw new ExchangeException(String
+                    .format("Please create %s sub account",
+                            initialCurrency.equals(AccountType.PLN) ? finalCurrency : initialCurrency));
+        }
 
 
-            try {
-                currencyRate = rateService.getRate(finalCurrency);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    }
+
+    private void plnToForeignExchange(UserEntity userEntity, AccountType finalCurrency, BigDecimal requestedValue) {
+        try {
+
+            BigDecimal userPlnBalance = userService.getUserPln(userEntity);
+            BigDecimal currencyRate = rateService.getRate(finalCurrency);
 
             if (userPlnBalance.compareTo(requestedValue) > 0){
                 BaseAccount userPlnAccount = userService.getUserPlnAccount(userEntity);
@@ -71,16 +61,38 @@ public class ForeignExchangeImpl implements Exchange {
                         .add(foreignCurrencyBalance));
                 userPlnAccount.setBalance(userPlnBalance.subtract(requestedValue));
             } else {
-                throw new Exception(String
-                        .format("Requested value is greater than %s balance",initialCurrency));
+                throw new ExchangeException(String
+                        .format("Requested value is greater than %s balance",AccountType.PLN));
             }
-        } else {
-            throw new Exception(String
-                    .format("Please create %s sub account",
-                            initialCurrency.equals(AccountType.PLN) ? finalCurrency : initialCurrency));
+
+        } catch (ExchangeException e) {
+            e.printStackTrace();
         }
+    }
 
+    private void foreignToPlnExchange(UserEntity userEntity, AccountType initialCurrency, BigDecimal requestedValue) {
+        BaseAccount foreignCurrencyAccount = userService.getUserSubAccount(userEntity, initialCurrency);
+        BigDecimal foreignCurrencyBalance = userService.getCurrencyBalance(userEntity, initialCurrency);
 
+        try {
+
+            BigDecimal userPlnBalance = userService.getUserPln(userEntity);
+            BigDecimal currencyRate = rateService.getRate(initialCurrency);
+
+            if (foreignCurrencyBalance.compareTo(requestedValue) >= 0) {
+                BaseAccount userPlnAccount = userService.getUserPlnAccount(userEntity);
+
+                userPlnAccount.setBalance(requestedValue.multiply(currencyRate).add(userPlnBalance));
+                foreignCurrencyAccount.setBalance(foreignCurrencyBalance.subtract(requestedValue));
+
+            } else {
+                throw new ExchangeException(String
+                        .format("Requested value is greater than %s balance", initialCurrency));
+            }
+
+        } catch (ExchangeException e) {
+            e.printStackTrace();
+        }
     }
 
 }
