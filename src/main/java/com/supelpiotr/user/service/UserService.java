@@ -8,6 +8,7 @@ import com.supelpiotr.confirmationToken.service.ConfirmationTokenService;
 import com.supelpiotr.user.data.UserEntity;
 import com.supelpiotr.user.dto.UserDTO;
 import com.supelpiotr.user.repository.UserRepository;
+import com.supelpiotr.utils.PeselHelper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.User;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collector;
@@ -47,8 +49,15 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void registerUser(UserEntity user) {
+    public void registerUser(UserEntity user) throws Exception {
 
+        Long birthYear = PeselHelper.getBirthYear(user.getPesel());
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        if (!PeselHelper.isPeselValid(user.getPesel())){
+            throw new Exception("PESEL number invalid");
+        } else if (year - birthYear < 18){
+            throw new Exception("User is underaged");
+        }
         final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 
         user.setPassword(encryptedPassword);
@@ -64,13 +73,16 @@ public class UserService implements UserDetailsService {
     public UserEntity mapToEntity(UserDTO userDTO) {
 
         userDTO.setEnabled(true);
-        UserEntity user = new ModelMapper().map(userDTO, UserEntity.class);
-        return user;
+        return new ModelMapper().map(userDTO, UserEntity.class);
 
     }
 
     public void save(UserEntity user) {
         userRepository.save(user);
+    }
+
+    public boolean subAccountActive(UserEntity user, AccountType accountType) {
+        return this.getUserSubAccount(user, accountType) != null;
     }
 
     public BigDecimal getCurrencyBalance(UserEntity user, AccountType accountType){
@@ -103,7 +115,9 @@ public class UserService implements UserDetailsService {
         return Collectors.collectingAndThen(
                 Collectors.toList(),
                 list -> {
-                    if (list.size() != 1) {
+                    if(list.isEmpty()){
+                        return null;
+                    } else if(list.size() != 1){
                         throw new IllegalStateException();
                     }
                     return list.get(0);

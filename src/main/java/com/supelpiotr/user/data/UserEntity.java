@@ -83,13 +83,6 @@ public class UserEntity implements UserDetails {
         return enabled;
     }
 
-    public boolean subAccountActive(AccountType accountType) {
-        return this.getUserAccount()
-                .stream()
-                .filter(i -> i.getType().equals(accountType))
-                .collect(toSingleton()) != null;
-    }
-
     public static <T> Collector<T, ?, T> toSingleton() {
         return Collectors.collectingAndThen(
                 Collectors.toList(),

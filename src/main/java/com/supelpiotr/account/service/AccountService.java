@@ -53,11 +53,10 @@ public class AccountService {
                 account.setType(accountType);
                 accounts.add(account);
                 user.setUserAccount(accounts);
-                user.setSubAccountActive(true);
                 userService.save(user);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("USD sub account already created!");
+                        .body(String.format("%s sub account already created!",accountType));
             }
         }
 

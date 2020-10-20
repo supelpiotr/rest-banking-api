@@ -1,7 +1,7 @@
 package com.supelpiotr.rate.service;
 
 import com.supelpiotr.account.data.AccountType;
-import com.supelpiotr.rate.data.Rate;
+import com.supelpiotr.rate.data.RateDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,9 +14,9 @@ public class RateService {
 
         final String uri = String.format("http://api.nbp.pl/api/exchangerates/rates/A/%s?HTTP Accept=JSON",accountType);
         RestTemplate restTemplate = new RestTemplate();
-        Rate result = restTemplate.getForObject(uri, Rate.class);
+        RateDTO result = restTemplate.getForObject(uri, RateDTO.class);
         if (result != null) {
-            return BigDecimal.valueOf(result.getMid());
+            return BigDecimal.valueOf(result.getRates().get(0).getMid());
         }
         throw new Exception("Cannot connect to NBP API");
     }

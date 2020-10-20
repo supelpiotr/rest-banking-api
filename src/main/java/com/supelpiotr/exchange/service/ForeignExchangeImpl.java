@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -22,41 +23,62 @@ public class ForeignExchangeImpl implements Exchange {
     public void exchange(ExchangeDTO exchangeDTO, UserEntity userEntity) throws Exception {
 
         AccountType initialCurrency = exchangeDTO.getInitialCurrency();
+        AccountType finalCurrency = exchangeDTO.getFinalCurrency();
 
         BigDecimal currencyRate = BigDecimal.ONE;
-
-        try {
-            currencyRate = rateService.getRate(initialCurrency);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         BigDecimal requestedValue = exchangeDTO.getRequestedValue();
-        BigDecimal initialBalance = userService.getCurrencyBalance(userEntity, initialCurrency);
+        BigDecimal userPlnBalance = userService.getUserPln(userEntity);
 
-        if (!initialCurrency.equals(AccountType.PLN)) {
+        if (!initialCurrency.equals(AccountType.PLN)
+                && userService.subAccountActive(userEntity, initialCurrency)) {
 
-            if (initialBalance.compareTo(requestedValue) < 0) {
+            BaseAccount foreignCurrencyAccount = userService.getUserSubAccount(userEntity, initialCurrency);
+            BigDecimal foreignCurrencyBalance = userService.getCurrencyBalance(userEntity, initialCurrency);
+
+            try {
+                currencyRate = rateService.getRate(initialCurrency);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (foreignCurrencyBalance.compareTo(requestedValue) >= 0) {
                 BaseAccount userPlnAccount = userService.getUserPlnAccount(userEntity);
-                BigDecimal userPln = userService.getUserPln(userEntity);
-                userPlnAccount.setBalance(requestedValue.multiply(currencyRate).add(userPln));
+
+                userPlnAccount.setBalance(requestedValue.multiply(currencyRate).add(userPlnBalance));
+                foreignCurrencyAccount.setBalance(foreignCurrencyBalance.subtract(requestedValue));
+
             } else {
                 throw new Exception(String
                         .format("Requested value is greater than %s balance", initialCurrency));
             }
-        }
-//        } else {
-//
-//            if (initialBalance.compareTo(requestedValue) < 0){
-//                BaseAccount userPlnAccount = userService.getUserSubAccount(userEntity,);
-//                BigDecimal userPln = userService.getUserPln(userEntity);
-//                userPlnAccount.setBalance(requestedValue.multiply(currencyRate).add(userPln));
-//            } else {
-//                throw new Exception(String
-//                        .format("Requested value is greater than %s balance",initialCurrency));
-//            }
-//        }
 
+        } else if (initialCurrency.equals(AccountType.PLN)
+                && userService.subAccountActive(userEntity, finalCurrency)){
+
+
+            try {
+                currencyRate = rateService.getRate(finalCurrency);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (userPlnBalance.compareTo(requestedValue) > 0){
+                BaseAccount userPlnAccount = userService.getUserPlnAccount(userEntity);
+                BaseAccount foreignCurrencyAccount = userService.getUserSubAccount(userEntity, finalCurrency);
+                BigDecimal foreignCurrencyBalance = userService.getCurrencyBalance(userEntity, finalCurrency);
+                foreignCurrencyAccount.setBalance(requestedValue
+                        .divide(currencyRate, 2, RoundingMode.CEILING)
+                        .add(foreignCurrencyBalance));
+                userPlnAccount.setBalance(userPlnBalance.subtract(requestedValue));
+            } else {
+                throw new Exception(String
+                        .format("Requested value is greater than %s balance",initialCurrency));
+            }
+        } else {
+            throw new Exception(String
+                    .format("Please create %s sub account",
+                            initialCurrency.equals(AccountType.PLN) ? finalCurrency : initialCurrency));
+        }
 
 
     }
