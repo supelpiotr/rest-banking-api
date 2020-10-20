@@ -3,8 +3,6 @@ package com.supelpiotr.user.service;
 import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.account.data.BaseAccount;
 import com.supelpiotr.account.repository.AccountRepository;
-import com.supelpiotr.confirmationToken.data.ConfirmationToken;
-import com.supelpiotr.confirmationToken.service.ConfirmationTokenService;
 import com.supelpiotr.user.data.UserEntity;
 import com.supelpiotr.user.dto.UserDTO;
 import com.supelpiotr.user.repository.UserRepository;
@@ -31,11 +29,10 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ConfirmationTokenService confirmationTokenService;
     private final AccountRepository accountRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String pesel) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String pesel) {
 
         final Optional<UserEntity> optionalUser = userRepository.findByPesel(pesel);
 
@@ -60,12 +57,8 @@ public class UserService implements UserDetailsService {
 
         user.setPassword(encryptedPassword);
 
-        final UserEntity createdUser = userRepository.save(user);
-
-        final ConfirmationToken confirmationToken = new ConfirmationToken(user);
-
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
-
+        userRepository.save(user);
+        
     }
 
     public UserEntity mapToEntity(UserDTO userDTO) {

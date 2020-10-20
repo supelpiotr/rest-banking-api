@@ -46,8 +46,7 @@ public class ForeignExchangeImpl implements Exchange {
 
     }
 
-    private void plnToForeignExchange(UserEntity userEntity, AccountType finalCurrency, BigDecimal requestedValue) {
-        try {
+    private void plnToForeignExchange(UserEntity userEntity, AccountType finalCurrency, BigDecimal requestedValue) throws ExchangeException {
 
             BigDecimal userPlnBalance = userService.getUserPln(userEntity);
             BigDecimal currencyRate = rateService.getRate(finalCurrency);
@@ -65,16 +64,11 @@ public class ForeignExchangeImpl implements Exchange {
                         .format("Requested value is greater than %s balance",AccountType.PLN));
             }
 
-        } catch (ExchangeException e) {
-            e.printStackTrace();
-        }
     }
 
-    private void foreignToPlnExchange(UserEntity userEntity, AccountType initialCurrency, BigDecimal requestedValue) {
+    private void foreignToPlnExchange(UserEntity userEntity, AccountType initialCurrency, BigDecimal requestedValue) throws ExchangeException {
         BaseAccount foreignCurrencyAccount = userService.getUserSubAccount(userEntity, initialCurrency);
         BigDecimal foreignCurrencyBalance = userService.getCurrencyBalance(userEntity, initialCurrency);
-
-        try {
 
             BigDecimal userPlnBalance = userService.getUserPln(userEntity);
             BigDecimal currencyRate = rateService.getRate(initialCurrency);
@@ -90,9 +84,6 @@ public class ForeignExchangeImpl implements Exchange {
                         .format("Requested value is greater than %s balance", initialCurrency));
             }
 
-        } catch (ExchangeException e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -2,7 +2,6 @@ package com.supelpiotr.user.controller;
 
 import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.account.service.AccountService;
-import com.supelpiotr.confirmationToken.service.ConfirmationTokenService;
 import com.supelpiotr.exchange.data.ExchangeDTO;
 import com.supelpiotr.exchange.service.Exchange;
 import com.supelpiotr.user.data.UserEntity;
@@ -25,7 +24,6 @@ public class UserController {
 
     private final UserService userService;
     private final AccountService accountService;
-    private final ConfirmationTokenService confirmationTokenService;
     private final Exchange exchange;
 
     @PostMapping(value="api/register", consumes="application/json")
@@ -87,3 +85,4 @@ public class UserController {
     }
 
 }
+
