@@ -34,7 +34,7 @@ public class AccountController {
             accountService.createSubAccount(user, accountType);
             userService.save(user);
         } catch (SubAccountCreationException e) {
-            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
 
         return ResponseEntity.status(HttpStatus.OK)
