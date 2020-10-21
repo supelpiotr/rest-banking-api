@@ -6,7 +6,7 @@ import com.supelpiotr.exchange.data.ExchangeDTO;
 import com.supelpiotr.rate.service.RateService;
 import com.supelpiotr.user.data.UserEntity;
 import com.supelpiotr.user.service.UserService;
-import com.supelpiotr.utils.ExchangeException;
+import com.supelpiotr.utils.exceptions.ExchangeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

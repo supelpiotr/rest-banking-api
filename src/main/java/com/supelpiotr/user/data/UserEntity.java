@@ -44,6 +44,14 @@ public class UserEntity implements UserDetails {
     private Boolean locked = false;
     private Boolean enabled = false;
 
+    public UserEntity(String firstName, String lastName, String pesel, String password, BigDecimal initialPlnBalance) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.pesel = pesel;
+        this.password = password;
+        this.initialPlnBalance = initialPlnBalance;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 

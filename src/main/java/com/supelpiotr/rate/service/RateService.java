@@ -2,7 +2,7 @@ package com.supelpiotr.rate.service;
 
 import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.rate.data.RateDTO;
-import com.supelpiotr.utils.ExchangeException;
+import com.supelpiotr.utils.exceptions.ExchangeException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

@@ -1,4 +1,4 @@
-package com.supelpiotr.utils;
+package com.supelpiotr.utils.exceptions;
 
 import lombok.Getter;
 

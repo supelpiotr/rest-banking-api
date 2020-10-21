@@ -1,10 +1,12 @@
 package com.supelpiotr.user.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 public class UserDTO {
 
     private boolean enabled;

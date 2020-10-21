@@ -4,7 +4,6 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,7 @@ import java.io.InputStream;
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authRequest;
         try (InputStream is = request.getInputStream()) {
             DocumentContext context = JsonPath.parse(is);

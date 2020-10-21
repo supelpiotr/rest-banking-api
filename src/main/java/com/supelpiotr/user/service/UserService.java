@@ -2,12 +2,12 @@ package com.supelpiotr.user.service;
 
 import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.account.data.BaseAccount;
-import com.supelpiotr.account.repository.AccountRepository;
+import com.supelpiotr.account.service.AccountService;
 import com.supelpiotr.user.data.UserEntity;
 import com.supelpiotr.user.dto.UserDTO;
 import com.supelpiotr.user.repository.UserRepository;
 import com.supelpiotr.utils.PeselHelper;
-import com.supelpiotr.utils.ExchangeException;
+import com.supelpiotr.utils.exceptions.RegistrationException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Override
     public UserDetails loadUserByUsername(String pesel) {
@@ -44,20 +45,24 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void registerUser(UserEntity user) throws ExchangeException {
+    public void registerUser(UserDTO userDTO) throws RegistrationException {
 
-        Long birthYear = PeselHelper.getBirthYear(user.getPesel());
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        if (!PeselHelper.isPeselValid(user.getPesel())){
-            throw new ExchangeException("PESEL number invalid");
-        } else if (year - birthYear < 18){
-            throw new ExchangeException("User is underaged");
+        if (userRepository.findByPesel(userDTO.getPesel()).isPresent()) {
+            throw new RegistrationException("User account is already created. Please login");
+        } else {
+            UserEntity user = mapToEntity(userDTO);
+            Long birthYear = PeselHelper.getBirthYear(user.getPesel());
+            int year = Calendar.getInstance().get(Calendar.YEAR);
+            if (!PeselHelper.isPeselValid(user.getPesel())){
+                throw new RegistrationException("PESEL number invalid");
+            } else if (year - birthYear < 18){
+                throw new RegistrationException("User is underaged");
+            }
+            final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+
+            user.setPassword(encryptedPassword);
+            userRepository.save(user);
         }
-        final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
-
-        user.setPassword(encryptedPassword);
-
-        userRepository.save(user);
         
     }
 
@@ -102,6 +107,10 @@ public class UserService implements UserDetailsService {
                 .collect(toSingleton());
     }
 
+    public List<UserEntity> findAllUsers(){
+        return userRepository.findAll();
+    }
+
     public static <T> Collector<T, ?, T> toSingleton() {
         return Collectors.collectingAndThen(
                 Collectors.toList(),
@@ -116,6 +125,17 @@ public class UserService implements UserDetailsService {
         );
     }
 
+    public void saveOnSturtup(UserEntity userEntity) {
+        Optional<UserEntity> initialUser = userRepository.findByPesel("87061612345");
+        accountService.prepareDefaultAccount(userEntity);
+
+        if (!initialUser.isPresent()) {
+            userRepository.save(userEntity);
+        } else {
+            userRepository.delete(initialUser.get());
+            userRepository.save(userEntity);
+        }
+    }
 }
 
 

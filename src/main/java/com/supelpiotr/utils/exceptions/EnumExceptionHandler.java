@@ -1,4 +1,4 @@
-package com.supelpiotr.utils;
+package com.supelpiotr.utils.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;

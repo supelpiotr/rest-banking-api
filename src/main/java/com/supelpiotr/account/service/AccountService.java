@@ -4,11 +4,9 @@ import com.supelpiotr.account.data.AccountType;
 import com.supelpiotr.account.data.BaseAccount;
 import com.supelpiotr.account.dto.AccountPlnDTO;
 import com.supelpiotr.user.data.UserEntity;
-import com.supelpiotr.user.service.UserService;
+import com.supelpiotr.utils.exceptions.SubAccountCreationException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,8 +16,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-
-    private final UserService userService;
 
     public BaseAccount mapToEntity(AccountPlnDTO accountDTO) {
 
@@ -39,7 +35,7 @@ public class AccountService {
 
     }
 
-    public ResponseEntity<String> createSubAccount(UserEntity user, AccountType accountType) {
+    public void createSubAccount(UserEntity user, AccountType accountType) throws SubAccountCreationException {
 
 
         if (user != null){
@@ -53,15 +49,10 @@ public class AccountService {
                 account.setType(accountType);
                 accounts.add(account);
                 user.setUserAccount(accounts);
-                userService.save(user);
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(String.format("%s sub account already created!",accountType));
+                throw new SubAccountCreationException (String.format("%s sub account already created!",accountType));
             }
         }
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Sub account created!");
 
     }
 

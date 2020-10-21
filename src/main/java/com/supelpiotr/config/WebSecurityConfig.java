@@ -4,11 +4,9 @@ import com.supelpiotr.controller.BaseController;
 import com.supelpiotr.user.controller.SessionController;
 import com.supelpiotr.user.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -42,6 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers("/api/session").permitAll()
+                .antMatchers("/api/users").hasRole("ADMIN")
                 .antMatchers("/api/register").permitAll()
                 .antMatchers("/api/user/**").permitAll()
                 .antMatchers(HttpMethod.GET).permitAll()
@@ -69,12 +68,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setAuthenticationManager(authenticationManager());
         filter.setFilterProcessesUrl("/api/session/login");
         return filter;
-    }
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService)
-                .passwordEncoder(bCryptPasswordEncoder);
     }
 
     private static void responseText(HttpServletResponse response, String content) throws IOException {
