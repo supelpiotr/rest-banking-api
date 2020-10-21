@@ -29,6 +29,8 @@ public class EnumExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     public ErrorDTO handleAccessDeniedException(Exception ex, HttpServletRequest request){
         return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED, ex.getMessage());
     }
