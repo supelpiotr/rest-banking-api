@@ -51,15 +51,16 @@ public class UserService implements UserDetailsService {
             throw new RegistrationException("User account is already created. Please login");
         } else {
             UserEntity user = mapToEntity(userDTO);
-            Long birthYear = PeselHelper.getBirthYear(user.getPesel());
             int year = Calendar.getInstance().get(Calendar.YEAR);
+            Long birthYear = PeselHelper.getBirthYear(user.getPesel());
             if (!PeselHelper.isPeselValid(user.getPesel())){
                 throw new RegistrationException("PESEL number invalid");
-            } else if (year - birthYear < 18){
+            } else if (birthYear != null && year - birthYear < 18){
                 throw new RegistrationException("User is underaged");
             }
             final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 
+            accountService.prepareDefaultAccount(user);
             user.setPassword(encryptedPassword);
             userRepository.save(user);
         }

@@ -15,7 +15,7 @@ import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
-public class ForeignExchangeImpl implements Exchange {
+public class ExchangeImpl implements Exchange {
 
     private final UserService userService;
     private final RateService rateService;

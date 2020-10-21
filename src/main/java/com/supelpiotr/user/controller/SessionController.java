@@ -1,6 +1,6 @@
 package com.supelpiotr.user.controller;
 
-import com.supelpiotr.controller.BaseController;
+import com.supelpiotr.utils.controller.BaseController;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.security.core.context.SecurityContext;

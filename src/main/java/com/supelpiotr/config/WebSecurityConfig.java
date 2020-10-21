@@ -1,6 +1,6 @@
 package com.supelpiotr.config;
 
-import com.supelpiotr.controller.BaseController;
+import com.supelpiotr.utils.controller.BaseController;
 import com.supelpiotr.user.controller.SessionController;
 import com.supelpiotr.user.service.UserService;
 import lombok.AllArgsConstructor;
@@ -82,7 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static class CustomLoginHandler extends BaseController implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-            LOGGER.info("User login successfully, name={}", authentication.getName());
+            logger.info("User login successfully, name={}", authentication.getName());
             responseText(response, objectResult(SessionController.getJSON(authentication)));
         }
 
@@ -97,7 +97,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-            LOGGER.info("User logout successfully, name={}", authentication.getName());
+            logger.info("User logout successfully, name={}", authentication.getName());
         }
 
         @Override

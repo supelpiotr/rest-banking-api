@@ -1,4 +1,4 @@
-package com.supelpiotr.controller;
+package com.supelpiotr.utils.controller;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 
 public class BaseController {
 
-    protected Logger LOGGER;
+    protected Logger logger;
     protected static final String MEDIA_TYPE = MediaType.APPLICATION_JSON_VALUE;
 
     public BaseController() {
-        LOGGER = LoggerFactory.getLogger(this.getClass());
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     protected String objectResult(Object object) {
