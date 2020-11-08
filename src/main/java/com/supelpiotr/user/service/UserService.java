@@ -31,6 +31,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AccountService accountService;
+    private final ModelMapper modelMapper;
 
     @Override
     public UserDetails loadUserByUsername(String pesel) {
@@ -136,6 +137,13 @@ public class UserService implements UserDetailsService {
             userRepository.delete(initialUser.get());
             userRepository.save(userEntity);
         }
+    }
+
+    public UserDTO mapToDTO(String name) {
+        UserDetails user = loadUserByUsername(name);
+        UserDTO userDTO = new UserDTO();
+        modelMapper.map(user,userDTO);
+        return userDTO;
     }
 }
 

@@ -42,7 +42,7 @@ public class AccountService {
             List<BaseAccount> accounts = user.getUserAccount();
             List<BaseAccount> usdAccounts = user.getUserAccount()
                     .stream()
-                    .filter(i -> i.getType().equals(AccountType.USD))
+                    .filter(i -> i.getType().equals(accountType))
                     .collect(Collectors.toList());
             if (usdAccounts.isEmpty()) {
                 BaseAccount account = new BaseAccount();

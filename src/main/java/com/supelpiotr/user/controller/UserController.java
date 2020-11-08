@@ -42,10 +42,10 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping(value="api/user/details")
-    public UserEntity getUserFromSession() {
+    public UserDTO getUserFromSession() {
 
         Authentication authentication = getAuthentication();
-        return (UserEntity) userService.loadUserByUsername(authentication.getName());
+        return userService.mapToDTO(authentication.getName());
 
     }
 

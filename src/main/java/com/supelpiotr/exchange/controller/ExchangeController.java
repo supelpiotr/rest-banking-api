@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 public class ExchangeController {
@@ -24,7 +26,7 @@ public class ExchangeController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping(value="api/exchange")
-    public ResponseEntity<String> exchange(@RequestBody ExchangeDTO exchangeDTO) {
+    public ResponseEntity<String> exchange(@Valid @RequestBody ExchangeDTO exchangeDTO) {
 
         Authentication authentication = getAuthentication();
         UserEntity user = (UserEntity) userService.loadUserByUsername(authentication.getName());

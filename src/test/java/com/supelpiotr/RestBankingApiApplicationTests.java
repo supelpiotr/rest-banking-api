@@ -67,7 +67,7 @@ public class RestBankingApiApplicationTests {
     @Test
     @WithUserDetails(value = "87061612345", userDetailsServiceBeanName="userService")
     public void shouldCreateSubAccountInUSD() throws Exception {
-        mvc.perform(get(CREATE_SUB_ACCOUNT_URL)).andExpect(status().isOk());
+        mvc.perform(post(CREATE_SUB_ACCOUNT_URL)).andExpect(status().isOk());
     }
 
     @Test

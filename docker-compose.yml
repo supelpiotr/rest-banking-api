@@ -1,0 +1,9 @@
+version: '2.2'
+services:
+  restbankingapi:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: restbankingapi
+    ports:
+      - 8080:8080

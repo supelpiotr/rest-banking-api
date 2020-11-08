@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,7 +25,7 @@ public class AccountController {
     private final UserService userService;
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping(value="api/create/subaccount/{currency}")
+    @PostMapping(value="api/create/subaccount/{currency}")
     public ResponseEntity<String> createSubAccount(@PathVariable("currency") AccountType accountType) {
 
         Authentication authentication = getAuthentication();
