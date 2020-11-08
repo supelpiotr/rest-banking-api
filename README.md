@@ -42,7 +42,7 @@
 <div>
 <p>&nbsp;</p>
 <ul>
-<li>GET /api/create/subaccount/{currency}</li>
+<li>POST /api/create/subaccount/{currency}</li>
 </ul>
 </div>
 <p>&nbsp;</p>
