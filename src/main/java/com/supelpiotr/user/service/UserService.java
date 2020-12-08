@@ -79,8 +79,8 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public boolean subAccountActive(UserEntity user, AccountType accountType) {
-        return this.getUserSubAccount(user, accountType) != null;
+    public static boolean subAccountActive(UserEntity user, AccountType accountType) {
+        return getUserSubAccount(user, accountType) != null;
     }
 
     public BigDecimal getCurrencyBalance(UserEntity user, AccountType accountType){
@@ -97,7 +97,7 @@ public class UserService implements UserDetailsService {
         return plnAccount.getBalance();
     }
 
-    public BaseAccount getUserSubAccount(UserEntity user, AccountType accountType){
+    public static BaseAccount getUserSubAccount(UserEntity user, AccountType accountType){
         return user.getUserAccount().stream()
                 .filter(i -> i.getType().equals(accountType))
                 .collect(toSingleton());
