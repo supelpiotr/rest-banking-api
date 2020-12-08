@@ -2,6 +2,7 @@ package com.supelpiotr.exchange.controller;
 
 import com.supelpiotr.exchange.data.ExchangeDTO;
 import com.supelpiotr.exchange.service.Exchange;
+import com.supelpiotr.exchange.service.ExchangeFactory;
 import com.supelpiotr.user.data.UserEntity;
 import com.supelpiotr.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import javax.validation.Valid;
 public class ExchangeController {
 
     private final UserService userService;
-    private final Exchange exchange;
+    private final ExchangeFactory exchangeFactory;
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping(value="api/exchange")
@@ -31,6 +32,7 @@ public class ExchangeController {
         Authentication authentication = getAuthentication();
         UserEntity user = (UserEntity) userService.loadUserByUsername(authentication.getName());
         try {
+            Exchange exchange = exchangeFactory.createExchange(exchangeDTO);
             exchange.exchange(exchangeDTO, user);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

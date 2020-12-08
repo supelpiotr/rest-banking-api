@@ -25,8 +25,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final AccountService accountService;
-    private final Exchange exchange;
 
     @PostMapping(value="api/register", consumes="application/json")
     public ResponseEntity<String> register(@Valid @RequestBody UserDTO userDTO) {
